@@ -1,0 +1,21 @@
+[lib:native]
+# Source files or directories.
+# Supported formats:
+#   cpp/src/
+#   cpp/src/*.c
+#   cpp/Main.c
+src = cpp/src
+
+# Additional header search directories.
+include = cpp/
+
+# Enable C++ compilation.
+# Set to false to compile as C.
+cpp = true
+
+# System or user libraries to link.
+link = android log
+
+# Additional compiler and linker flags.
+# The flags -shared and -fPIC are added automatically.
+flags = -O2 -Wall -s

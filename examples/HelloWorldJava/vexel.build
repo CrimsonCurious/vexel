@@ -1,0 +1,12 @@
+[app]
+name = HelloWorld
+package = com.example.helloworld
+version_code = 1
+version_name = 1.0
+
+[sdk]
+min = 29
+target = 33
+
+[ndk]
+enabled = false
