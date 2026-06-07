@@ -1,4 +1,4 @@
-              **Vexel**
+**Vexel**
 
 Vexel is a lightweight, self-contained Android APK builder written in Python. It is designed to build Android applications directly on Android devices without requiring Android Studio, Gradle, or a desktop computer.
 
