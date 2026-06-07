@@ -228,7 +228,7 @@ Provided by Android Build Tools and AOSP.
 
 Special thanks to:
 
-  - [SuperAppMan!](https://github.com/SuperAppMan)
+  - [SuperAppMan](https://github.com/SuperAppMan)
 
 for providing Android-compatible NDK builds used by Vexel.
 
