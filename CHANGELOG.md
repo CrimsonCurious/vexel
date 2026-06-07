@@ -11,3 +11,7 @@
   - Multi-dex support
   - Jar Library Support
   - Full Apk Building Support
+## v0.1.1
+
+  - Added support to adding dash in operation
+  - Fixed version
