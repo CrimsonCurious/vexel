@@ -68,28 +68,30 @@ PieStudios © 2026"""
 if __name__ == "__main__":
     if not check_file(Install_Marker):
     	add_execute_permission()
-    	with open(Install_Marker, "w") as f: f.write("1")
+    	with open(Install_Marker, "w") as f: f.write("installed")
     	
     if len(sys.argv) < 2:
         print(narg)
         exit()
+    else:
+    	arg = sys.argv[1].lstrip('-')
 
-    if sys.argv[1] == "create":
+    if arg == "create":
         new_project.create()
         
-    elif sys.argv[1] == "build":
+    elif arg == "build":
         builder.build()
         	
-    elif sys.argv[1] == "checkup":
+    elif arg == "checkup":
     	checkup()
     	
-    elif sys.argv[1] == "clean":
+    elif arg == "clean":
     	clean()
     
-    elif sys.argv[1] == "version":
+    elif arg == "version":
     	print(f"Vexel {Version}")
     	
-    elif sys.argv[1] == "help":
+    elif arg == "help":
     	print(help)
     	
     else: print(unkcmd)
