@@ -15,3 +15,4 @@
 
   - Added support to adding dash in operation
   - Fixed version
+  - Added missing Dependency `libz.so.1`
