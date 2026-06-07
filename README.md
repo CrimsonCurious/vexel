@@ -207,7 +207,7 @@ Vexel would not be possible without the following projects and tools.
 
 `Android Platform`
 
-  - Android SDK Platform ("android.jar")
+  - Android SDK Platform (`android.jar`)
   - Android Open Source Project (AOSP)
 
 `Android Build Tools`
