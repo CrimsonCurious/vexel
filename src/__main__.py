@@ -44,7 +44,7 @@ def add_execute_permission():
 #        CLI
 # ======================
 
-Version = "1.0"
+Version = "0.1.1"
 Install_Marker = path(Vexel_Home, ".installed")
 
 unkcmd = 'vexel: Unknown command [type "vexel help"]'
