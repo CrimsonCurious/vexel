@@ -10,6 +10,7 @@ name = My App
 package = com.example.app
 version_code = 1
 version_name = 1.0
+key = auto
 
 [sdk]
 min = 21
@@ -49,6 +50,10 @@ Minimum Android API.
 ### target
 
 Target Android API.
+
+### key
+
+Key used to sign apk
 
 ## [ndk]
 

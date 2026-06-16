@@ -26,7 +26,7 @@ MyApp/
 │
 ├── vexel.build
 │
-└── out/
+└── build/
 ```
 
 ## Important Directories
@@ -51,6 +51,6 @@ Files packed into APK assets.
 
 Additional libraries.
 
-### out
+### build/output
 
 Generated build output.

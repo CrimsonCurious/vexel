@@ -29,8 +29,8 @@ def run_aapt2_link():
 	flat_files = find_files(output['res'], ".flat")
 
 	run([
-		tool['aapt2'], "link", "-o", 
-		path(output['dir'], "temp.apk"), "-I", tool['platform'],
+		tool['aapt2'], "link", "-o",
+		path(output['apk'], "base.apk"), "-I", tool['platform'],
 		"--manifest", output['manifest'], "--java", output['gen'],
 		*flat_files
 	])
@@ -113,18 +113,22 @@ def add_to_apk(apk_path, source_path, apk_inner_path="", not_exists_ok=True, zip
 def align_apk():
 	run([
 		tool['zipalign'], "-f", "4",
-		path(output['dir'], "temp_unaligned.apk"),
-		path(output['dir'], "Debug.apk")
+		path(output['apk'], "unaligned.apk"),
+		path(output['apk'], "final.apk")
 	])
 
-def sign_apk():
-	keystore_path, password = generate_keystore(output['key'])
-		
+def sign_apk(config):
+	app = config.get("app", {})
+	if app['key'].lower() == "auto":
+		keystore_path, password = generate_keystore(output['key'])
+	else:
+		keystore_path, password = generate_keystore(output['key'], key=app['key'])
+	
 	run([
 		tool['java'], "-jar", tool['apksigner'], "sign",
 		"--ks", keystore_path,
 		"--ks-pass", f"pass:{password}",
-		path(output['dir'], "Debug.apk")
+		path(output['apk'], "final.apk")
 	])
 
 def update_manifest(manifest_path, out_manifest_path, cfg):
@@ -171,18 +175,17 @@ def update_manifest(manifest_path, out_manifest_path, cfg):
 
 	tree.write(out_manifest_path, encoding="utf-8", xml_declaration=True)
 	
-def generate_keystore(Out_Key_dir, length=24):
+def generate_keystore(Out_Key_dir, key=None, length=24):
 	keystore_path = path(Out_Key_dir, "debug.keystore")
 
-	if os.path.exists(keystore_path):
-		with open(path(Out_Key_dir, "debug.keystore.pass")) as f:
-			password = f.read().strip()
-			return keystore_path, password
+	if not key == None:
+		password = key
+	else:
+		VexelLog("Generating new pessword...", "INFO")
+		chars = string.ascii_letters + string.digits
+		password = ''.join(secrets.choice(chars) for _ in range(length))
 
-	VexelLog("Generating new keystore...", "INFO")
-
-	chars = string.ascii_letters + string.digits
-	password = ''.join(secrets.choice(chars) for _ in range(length))
+	VexelLog("Generating keystore...", "INFO")
 
 	run([
 		tool['keytool'],

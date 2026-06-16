@@ -36,12 +36,12 @@ Features
   - DEX generation using D8
   - APK alignment
   - APK signing
-  - Automatic debug keystore generation
+  - Automatic/Manual debug keystore generation
 
 Supported APIs:
-  - 33
+  - 34
 
-*NOTE: The API 33 and older APIs are only supported yet.*
+*NOTE: The API 34 and older APIs are only supported yet.*
 
 Native Development (NDK)
 
@@ -91,8 +91,6 @@ Vexel primarily targets:
 
 Experimental support:
 
-  - Cxxdroid
-  - Pydroid
   - Other Android terminal environments
 
 ---
@@ -111,7 +109,7 @@ MyApp/
 │   └── AndroidManifest.xml
 │
 ├── vexel.build
-└── out/
+└── build/
 ```
 
 ---
@@ -156,6 +154,38 @@ link = android log
 
 flags = -O2 -Wall -s
 ```
+
+---
+
+**Usage**
+
+*Creating a New Project*
+
+To create a new project, run:
+
+```text
+vexel new
+```
+
+Select the desired project template when prompted.
+
+Configuring the Project
+
+After creating the project:
+
+1. Edit the "vexel.build" file to configure your project settings.
+2. If your project contains C or C++ code, edit the "native.build" file as needed.
+3. Implement your application code.
+
+Building the Application
+
+Once your project is ready, build it using:
+
+```text
+vexel build
+```
+
+The build process will generate an Android APK from your project source code.
 
 ---
 

@@ -37,8 +37,6 @@ Official:
 
 Experimental:
 
-- Pydroid
-- Cxxdroid
 - Other Android terminal environments
 
 ## Updating

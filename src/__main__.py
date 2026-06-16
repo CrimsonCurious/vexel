@@ -3,9 +3,6 @@
 # ============================================================
 import sys
 import os
-import stat
-import new_project
-import builder
 
 from variables import *
 from core_utils import *
@@ -27,6 +24,7 @@ def checkup():
 	VexelLog("All Build Tools Checked", "INFO")
 
 def add_execute_permission():
+	import stat
 	runtime_ = find_files(RT_Bin, "")
 	tool_ = [tool['aapt2'], tool['zipalign']]
 	if check_dir(tool['ndk']):
@@ -44,7 +42,7 @@ def add_execute_permission():
 #        CLI
 # ======================
 
-Version = "0.1.1"
+Version = "0.2.0"
 Install_Marker = path(Vexel_Home, ".installed")
 
 unkcmd = 'vexel: Unknown command [type "vexel help"]'
@@ -56,8 +54,8 @@ Usage:
   vexel <command>
 
 Commands:
-  create       Create a new project
-  build        Build current project
+  new          Create a new project
+  build        Builds the project
   clean        Remove build cache
   checkup      Check build environment
   version      Display current version
@@ -76,10 +74,15 @@ if __name__ == "__main__":
     else:
     	arg = sys.argv[1].lstrip('-')
 
-    if arg == "create":
-        new_project.create()
+    if arg == "new":
+        import new_project
+        try:
+        	new_project.create(sys.argv[2])
+        except IndexError:
+        	new_project.create()
         
     elif arg == "build":
+        import builder
         builder.build()
         	
     elif arg == "checkup":

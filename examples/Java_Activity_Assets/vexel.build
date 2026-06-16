@@ -1,0 +1,14 @@
+[app]
+name = Assets
+package = com.app
+version_code = 1
+version_name = 1.0
+key = Auto
+# You can enter your own key or use Auto to automatically generated it
+
+[sdk]
+min = 29
+target = 34
+
+[ndk]
+enabled = false

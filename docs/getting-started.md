@@ -5,11 +5,12 @@ Vexel is a lightweight Android APK builder designed to run directly on Android d
 ## Create a Project
 
 ```sh
-vexel create
+vexel new
 ```
 
 Follow the prompts and enter:
 
+- Template
 - Application Name
 - Package Name
 - Minimum SDK
@@ -24,7 +25,7 @@ vexel build
 After a successful build:
 
 ```text
-out/Debug.apk
+build/output/Debug.apk
 ```
 
 will be generated.

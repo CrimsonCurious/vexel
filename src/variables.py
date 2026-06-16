@@ -43,7 +43,7 @@ project = {
 }
 
 # Output Dirs
-output = {"dir": path(Project_dir, "out")}
+output = {"dir": path(Project_dir, "build", "intermediates")}
 output["res"] = path(output["dir"], "res")
 output["dex"] = path(output["dir"], "dex")
 output["classes"] = path(output["dir"], "classes")
@@ -51,9 +51,11 @@ output["gen"] = path(output["dir"], "gen")
 output["key"] = path(output["dir"], "key")
 output["dyn_lib"] = path(output["dir"], "lib")
 output["manifest"] = path(output["gen"], "AndroidManifest.xml")
+output['apk'] = path(output['dir'], "apk")
+output['final'] = path(Project_dir, "build", "output")
 
 tool = {
-    "platform": path(Vexel_Home, "platforms", "android-33","android.jar"),
+    "platform": path(Vexel_Home, "platforms", "android.jar"),
     "java": path(RT_Bin, "java"),
     "javac": path(RT_Bin, "javac"),
     "keytool": path(RT_Bin, "keytool"),
