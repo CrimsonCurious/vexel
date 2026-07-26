@@ -1,0 +1,12 @@
+[app]
+name = "Assets"
+package = "com.example.assets"
+version_code = 1
+version_name = 1.0
+
+[sdk]
+min = 29
+target = 34
+
+[ndk]
+enabled = false
