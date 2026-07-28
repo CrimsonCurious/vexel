@@ -130,6 +130,33 @@ object Build {
 		}
 	}
 	
+	// Merge Libraries
+	fun mergeNativeLibraries(srcDir: String, dstDir: String) {
+    	val source = File(srcDir)
+    	val dest = File(dstDir)
+
+    	if (!source.exists()) return
+    	dest.mkdirs()
+
+    	source.walkTopDown().filter { it.isFile }.forEach { file ->
+            val relative = file.relativeTo(source)
+            val outFile = File(dest, relative.path)
+
+            outFile.parentFile?.mkdirs()
+
+            if (outFile.exists()) {
+                vexelThrow(
+                    ErrorCode.FILE_ALREADY_EXISTS,
+                    "Native library conflict: ${relative.path}",
+                    "Two libraries with the same name were found. Remove one of them.",
+                    debugInfo = "Source: ${file.absolutePath}\nDestination: ${outFile.absolutePath}"
+                )
+            }
+
+            file.copyTo(outFile)
+        }
+	}
+	
 	// Zipalign
 	fun alignApk() {
 		BuildTools.runZipalign(listOf("-f", "4",
