@@ -59,9 +59,9 @@ fun build() {
     }
 
     // Add User Dynamic Libraries
-    Build.addToZip(
-        path(Vexel.Output.apk, "unaligned.apk"),
-        Vexel.Project.dynLib
+	Build.mergeNativeLibraries(
+    	Vexel.Project.dynLib,
+    	Vexel.Output.dynLib
 	)
 
     // Add Compiled Dynamic Libraries
