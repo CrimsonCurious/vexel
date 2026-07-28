@@ -63,3 +63,9 @@
 - Improved build performance
 - Fixed numerous bugs
 - Internal codebase cleanup and refactoring
+
+## v0.3.1
+- Fixed packaging of user-provided native libraries together with Vexel-compiled libraries.
+- Updated D8 and APK Signer to Android 16 Build Tools.
+- Fixed launcher failing to locate vexel-main.jar when invoked through a symbolic link.
+  
