@@ -35,6 +35,8 @@ object ANSI {
 object ErrorCode {
     const val FILE_NOT_FOUND = "FILE_NOT_FOUND" //
     const val DIR_NOT_FOUND = "DIRECTORY_NOT_FOUND" //
+
+	const val FILE_ALREADY_EXISTS = "FILE_ALREADY_EXISTS" //
     
     const val FILE_WRITE_FAILED = "FILE_WRITE_FAILED" //
     const val FILE_PERMISSION_FAILED = "FILE_PERMISSON_FAILED" //
