@@ -6,7 +6,10 @@ package app.pie.vexel
 import com.android.tools.r8.D8
 import com.android.apksigner.ApkSignerTool
 
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.PrintStream
+import java.net.URLClassLoader
 
 object BuildTools {
 	private val isWindows = Vexel.Env.platform == "x64-windows"
@@ -64,7 +67,7 @@ object BuildTools {
 	}
 	
 	private fun getBundledTool(name: String): String {
-    	val exe = if (isWindows) "$name.exe" else name
+		val exe = if (isWindows) "$name.exe" else name
     	val path = ensureCached(path("vexel-tools", Vexel.Env.platform, exe), exe)
     	makeExecutable(path)
     	return path
@@ -114,5 +117,11 @@ object BuildTools {
             return it
         }
 		return ensureCached(path("vexel-tools", "android-34.jar"), "android-34.jar")
+	}
+	
+	fun runKotlinc(args: Array<String>): String {
+		val launcherName = path(Vexel.Env.kotlinHome, "bin", "kotlinc")
+		val launcher = if (isWindows) "${launcherName}.bat" else launcherName
+		return runCmd(listOf(launcher) + args)
 	}
 }

@@ -8,10 +8,11 @@ data class ProjectConfig(
 	val packageName: String, val sdkMin: Int, val sdkTarget: Int
 ) {
 	val nativePackage = packageName.replace(".", "_")
+	val main_lang = if (template == 1 || template == 3) { "java" } else { "kotlin" }
 	val packageDir = path(
 		Vexel.Env.projectDir,
 		"src",
-		"java",
+		main_lang,
 		*packageName.split(".").toTypedArray()
 	)
 }
@@ -30,8 +31,19 @@ fun writeTemplate(cfg: ProjectConfig) {
 	extractZip(Vexel.Cache.defaultIcons, Vexel.Project.res)
 	when (cfg.template) {
 
-		// Native Activity
+		// Java Activity
 		1 -> {
+			writeFile(Vexel.Project.vexelBuild, DefaultData.getVexelBuild(2, cfg.appName, cfg.packageName, cfg.sdkMin, cfg.sdkTarget))
+			writeFile(path(cfg.packageDir, "MainActivity.java"), DefaultData.getJavaActivity(2, cfg.packageName))
+			
+		}
+		
+		2 -> {
+			writeFile(Vexel.Project.vexelBuild, DefaultData.getVexelBuild(2, cfg.appName, cfg.packageName, cfg.sdkMin, cfg.sdkTarget))
+			writeFile(path(cfg.packageDir, "MainActivity.kt"), DefaultData.getKotlinActivity(cfg.packageName))
+		}
+		
+		3 -> {
 			writeFile(Vexel.Project.vexelBuild, DefaultData.getVexelBuild(1, cfg.appName, cfg.packageName, cfg.sdkMin, cfg.sdkTarget))
 			writeFile(path(cfg.packageDir, "MainActivity.java"), DefaultData.getJavaActivity(1, cfg.packageName))
 			makeDir(Vexel.Project.cpp)
@@ -40,11 +52,15 @@ fun writeTemplate(cfg: ProjectConfig) {
 
 			writeFile(path(Vexel.Project.cpp, "native.build"), DefaultData.getNativeBuild())
 		}
+		
+		4 -> {
+			writeFile(Vexel.Project.vexelBuild, DefaultData.getVexelBuild(1, cfg.appName, cfg.packageName, cfg.sdkMin, cfg.sdkTarget))
+			writeFile(path(cfg.packageDir, "MainActivity.kt"), DefaultData.getKotlinActivity(cfg.packageName))
+			makeDir(Vexel.Project.cpp)
 
-		// Java Activity
-		2 -> {
-			writeFile(Vexel.Project.vexelBuild, DefaultData.getVexelBuild(2, cfg.appName, cfg.packageName, cfg.sdkMin, cfg.sdkTarget))
-			writeFile(path(cfg.packageDir, "MainActivity.java"), DefaultData.getJavaActivity(2, cfg.packageName))
+			writeFile(path(Vexel.Project.cpp, "src", "main.cpp"), DefaultData.getCppMain(cfg.nativePackage))
+
+			writeFile(path(Vexel.Project.cpp, "native.build"), DefaultData.getNativeBuild())
 		}
 
 		else -> {
@@ -116,7 +132,12 @@ fun askProjectConfig(template: Int): ProjectConfig {
 fun create(arg: String? = null) {
 	vexelLog("Creating project...", "INFO")
 
-	val templates = mapOf("1" to 1, "2" to 2, "native" to 1, "java" to 2)
+	val templates = mapOf(
+		"1" to 1, "2" to 2, "3" to 3, "4" to 4,
+		"java" to 1, "kotlin" to 2,
+		"native_java" to 3, "native_kotlin" to 4
+	)
+	
 	val template: Int
 	val cfg: ProjectConfig
 	
@@ -129,8 +150,10 @@ fun create(arg: String? = null) {
 		
 	} else {
 		println("Choose Template:")
-		println("  [1] Native Activity")
-		println("  [2] Java Activity")
+		println("  [1] Java Activity")
+		println("  [2] Kotlin Activity")
+		println("  [3] Native Activity (java)")
+		println("  [4] Native Activity (kotlin)")
 
 		print("Template: ")
 
@@ -141,7 +164,7 @@ fun create(arg: String? = null) {
 		cfg = askProjectConfig(template)
 	}
 
-	if (template !in listOf(1, 2)) {
+	if (template !in listOf(1, 2, 3, 4)) {
 		vexelThrow(ErrorCode.INVALID_INPUT,
 			"Invalid temple selected"
 		)

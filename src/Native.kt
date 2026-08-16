@@ -96,10 +96,15 @@ fun buildNative() {
     val cfgndk = vexelB["ndk"] as? Map<String, Any> ?: emptyMap()
     val enabled = cfgndk["enabled"] as? Boolean ?: false
 
-    if (!enabled) { return }
+    if (!enabled) {
+    	vexelLog("No C/C++ sources found.", "INFO")
+    	return
+    }
     checkNdk()
 
-    vexelLog("Compile Native...", "BUILD")
+    vexelLog("C/C++ sources found", "INFO")
+	vexelLog("Compiling C/C++ sources...", "BUILD")
+	
     makeDir(Vexel.Output.dynLib)
 
     val buildScript = cfgndk["build_script"] ?.toString() ?: return

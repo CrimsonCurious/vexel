@@ -33,24 +33,25 @@ object ANSI {
 }
 
 object ErrorCode {
-    const val FILE_NOT_FOUND = "FILE_NOT_FOUND" //
-    const val DIR_NOT_FOUND = "DIRECTORY_NOT_FOUND" //
+    const val FILE_NOT_FOUND = "FILE_NOT_FOUND"
+    const val DIR_NOT_FOUND = "DIRECTORY_NOT_FOUND"
     
-    const val FILE_WRITE_FAILED = "FILE_WRITE_FAILED" //
-    const val FILE_PERMISSION_FAILED = "FILE_PERMISSON_FAILED" //
-    const val DIR_WRITE_FAILED = "DIRECTORY_WRITE_FAILED" //
-    const val DIR_DELETE_FAILED = "DIRECTORY_DELETE_FAILED" //
+    const val FILE_ALREADY_EXISTS = "FILE_ALREADY_EXISTS"
     
-    const val INVALID_ARGUMENT = "INVALID_ARGUMENT"
-    const val INVALID_CONFIG = "INVALID_CONFIG" //
-    const val INVALID_MANIFEST = "INVALID_MANIFEST" //
+    const val FILE_WRITE_FAILED = "FILE_WRITE_FAILED"
+    const val FILE_PERMISSION_FAILED = "FILE_PERMISSON_FAILED"
+    const val DIR_WRITE_FAILED = "DIRECTORY_WRITE_FAILED"
+    const val DIR_DELETE_FAILED = "DIRECTORY_DELETE_FAILED"
 
-    const val TOOL_NOT_FOUND = "TOOL_NOT_FOUND" //
-    const val PROCESS_FAILED = "PROCESS_FAILED" //
+    const val INVALID_CONFIG = "INVALID_CONFIG"
+    const val INVALID_MANIFEST = "INVALID_MANIFEST"
 
-    const val ZIP_ERROR = "ZIP_ERROR" //
-    const val INVALID_ABI = "INVALID_ABI" //
-    const val INVALID_INPUT = "INVALID_INPUT" //
+    const val TOOL_NOT_FOUND = "TOOL_NOT_FOUND"
+    const val PROCESS_FAILED = "PROCESS_FAILED"
+
+    const val ZIP_ERROR = "ZIP_ERROR"
+    const val INVALID_ABI = "INVALID_ABI"
+    const val INVALID_INPUT = "INVALID_INPUT"
     const val INTERNAL_ERROR = "INTERNAL_ERROR"
 }
 
@@ -65,8 +66,11 @@ object Vexel {
 		val home: String = path(userHome, ".vexel")
 		val projectDir: String = System.getProperty("user.dir")
 		val platform by lazy { getPlatform() }
-        
 		val projectSrc: String = path(projectDir, "src")
+		
+		val kotlinHome: String = path(currentJarDir, "..", "tools", "kotlin")
+		val kotlinStdlib: String = path(kotlinHome, "lib", "kotlin-stdlib.jar")
+		val kotlinReflect: String = path(kotlinHome, "lib", "kotlin-reflect.jar")
 	}
 	
 	// Vexel Config
@@ -106,11 +110,12 @@ object Vexel {
 	// Output Paths
 	object Output {
 		val dir: String = path(Env.projectDir, "build", "intermediates")
+		val key: String = path(Env.projectDir, "build", "signing")
+		
 		val res: String = path(dir, "resources")
 		val dex: String = path(dir, "dex")
 		val classes: String = path(dir, "classes")
 		val gen: String = path(dir, "generated")
-		val key: String = path(dir, "key")
 		val dynLib: String = path(dir, "lib")
 		val manifest: String = path(dir, "generated", "AndroidManifest.xml")
 		val apk: String = path(dir, "apk")

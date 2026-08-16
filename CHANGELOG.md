@@ -63,3 +63,54 @@
 - Improved build performance
 - Fixed numerous bugs
 - Internal codebase cleanup and refactoring
+
+## v0.3.1
+- Fixed packaging of user-provided native libraries together with Vexel-compiled libraries.
+- Updated D8 and APK Signer to Android 16 Build Tools.
+- Fixed launcher failing to locate vexel-main.jar when invoked through a symbolic link.
+
+## v0.4.0
+
+### Kotlin support
+
+- Added Kotlin project support.
+- Added bundled Kotlin compiler.
+- Added automatic Kotlin compiler setup and execution.
+- Added support for Kotlin source files in `src/kotlin/`.
+- Added support for building mixed Java/Kotlin projects.
+
+### Project templates
+
+- Added new Kotlin-based project templates.
+- Added Native Activity templates for both Java and Kotlin.
+- Fixed incorrect package names in project templates.
+- Improved generated project structure.
+
+### Build system
+
+- Improved Java, Kotlin, and C/C++ source detection.
+- Improved build logging and build-step reporting.
+- Added clearer messages when source types are not present.
+- Improved generated Java source handling.
+- Improved APK signing and debug signing-key handling.
+- Added persistent debug signing credentials.
+- Added dedicated `build/signing/` directory for signing files.
+- Improved build output organization.
+- APK output now uses the project/app name in the filename.
+
+### Diagnostics
+
+- Improved build and process error reporting.
+- Improved compiler error output and debugging information.
+
+### Documentation
+
+- Added and expanded Vexel documentation.
+- Added better contribution guidelines.
+- Updated examples and templates.
+
+### Other
+
+- Fixed numerous bugs discovered in project templates and the build pipeline.
+- Improved overall build reliability and project generation.
+- General cleanup and internal improvements.

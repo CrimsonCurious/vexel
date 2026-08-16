@@ -28,7 +28,6 @@ object DefaultData {
 		
 		return androidManifest
 	}
-	
 	fun getJavaActivity(type: Int, packageName: String): String {
 		return when(type) {
 			1 -> """
@@ -85,6 +84,30 @@ public class MainActivity extends Activity {
 		}
 	}
 	
+	fun getKotlinActivity(packageName: String): String {
+		val MainActivity = """
+package $packageName
+
+import android.app.Activity
+import android.os.Bundle
+import android.widget.TextView
+
+class MainActivity : Activity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContentView(R.layout.activity_main)
+
+        val text: TextView = findViewById(R.id.text)
+
+        text.text = "Hello, World!"
+    }
+}
+		""".trimIndent()
+		return MainActivity
+	}
+	
 	fun getXMLMain(): String {
 	   val activityMain = """
 <?xml version="1.0" encoding="utf-8"?>
@@ -106,7 +129,6 @@ public class MainActivity extends Activity {
 		""".trimIndent()
 		return activityMain
 	}
-	
 	fun getCppMain (nativePackage: String): String {
 	   val mainCpp = """
 #include <jni.h>
@@ -122,7 +144,6 @@ Java_${nativePackage}_MainActivity_getMessage(
 		""".trimIndent()
 		return mainCpp
 	}
-	
 	fun getVexelBuild(type: Int, appName: String, packageName: String, sdkMin: Int, sdkTarget: Int): String {
 	   return when(type) {
 	   	1 -> """
@@ -159,7 +180,6 @@ enabled = false
        	 else -> error("Invalid template type")
 		}
 	}
-	
 	fun getNativeBuild(): String {
 		val nativeBuild = """
 ["lib-native"]
@@ -186,5 +206,29 @@ flags = "-O2 -Wall -s"
 
 		""".trimIndent()
 		return nativeBuild
+	}
+	fun getConfigToml(): String {
+		val configToml = """
+		# Vexel Configuration
+[java]
+# Optional. Falls back to JAVA_HOME if omitted.
+home = "default"
+
+[tools]
+# Use "default" to use the bundled tool.
+aapt2 = "default"
+zipalign = "default"
+androidJar = "default"
+
+# Path to the LLVM prebuilt directory.
+# This is only for example may you have to change this.
+ndk = "/ndk/android-r29/toolchains/llvm/prebuilt/linux-arm64" 
+
+[logs]
+enableColor = true
+enableTimeStamp = true
+enableDebugMode = true
+		""".trimIndent()
+		return configToml
 	}
 }

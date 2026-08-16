@@ -120,14 +120,9 @@ Cause:
 
 The configured Android API level is not available in the bundled NDK.
 
-Supported values:
+Fix:
 
-```text
-21
-24
-29
-35
-```
+Change API to any supported API that NDK supports
 
 Example:
 

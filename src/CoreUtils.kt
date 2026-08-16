@@ -6,9 +6,9 @@ package app.pie.vexel
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import java.nio.file.Path
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 import kotlin.system.exitProcess
 
@@ -30,7 +30,12 @@ fun path(vararg parts: String): String =
 
 fun vexelLog(message: String, tag: String = "NONE", exit: Boolean = true) {
 	val upperTag = tag.uppercase()
-	val time = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
+	
+	val zoneId = java.util.TimeZone.getDefault().id
+	val zone = java.time.ZoneId.of(zoneId)
+	val time = java.time.ZonedDateTime.now(zone)
+      .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"))
+	
 	val parts = mutableListOf<String>()
 
 	if (Vexel.Config.enableTimeStamp) { parts.add("[$time] ") }
@@ -59,8 +64,14 @@ fun vexelThrow(
 	cause: Throwable? = null, debugInfo: String? = null
 ): Nothing {
     val useColor = Vexel.Config.enableColor
+    
+    val zoneId = java.util.TimeZone.getDefault().id
+    val zone = java.time.ZoneId.of(zoneId)
+    val time = java.time.ZonedDateTime.now(zone)
+      .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"))
+      
     val timeStamp = if (Vexel.Config.enableTimeStamp) {
-    	"[${LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))}] "
+    	"[${time}] "
 	} else {
     	""
 	}
@@ -195,10 +206,12 @@ fun removeDir(path: String) {
 
 }
 
-fun findFiles(dir: String, ext: String): List<String> {
+fun findFiles(dir: String, ext: String, allowMissingDir: Boolean = false): List<String> {
+	val result = mutableListOf<String>()
 	val directory = File(dir)
 	
 	if (!directory.isDirectory) {
+		if (allowMissingDir) { return result }
 		vexelThrow(ErrorCode.DIR_NOT_FOUND, 
 			"Directory does not exists: $dir",
 			"Verify the directory exists and you have read permission"
@@ -206,7 +219,6 @@ fun findFiles(dir: String, ext: String): List<String> {
 	}
 	
 	val normalizedExt = ext.removePrefix(".")
-	val result = mutableListOf<String>()
 	
 	directory.walkTopDown().forEach {
 		if (it.isFile && it.extension == normalizedExt) {

@@ -47,8 +47,34 @@ object Build {
 	
 	// Java
 	fun runJavaCompile() {
-		val javaFiles = findFiles(path(Vexel.Project.dir, "java"), ".java")
-		val genFiles = findFiles(Vexel.Output.gen, ".java")
+		val javaDir = path(Vexel.Project.dir, "java")
+		val javaFiles = if (checkDir(javaDir))
+		  { findFiles(javaDir, ".java") }
+		  else { emptyList() }
+
+		val genFiles = if (checkDir(Vexel.Output.gen)) 
+		  { findFiles(Vexel.Output.gen, ".java") } 
+		  else { emptyList() }
+		  
+		if (javaFiles.isEmpty() && genFiles.isEmpty()) {
+    		vexelLog("No Java sources found, skipping Java compilation.", "INFO")
+    		return
+		}
+		
+		if (javaFiles.isEmpty()) {
+			vexelLog("No project Java sources found.", "INFO")
+		}
+		
+		if (javaFiles.isNotEmpty()) {
+    		vexelLog("Found ${javaFiles.size} Java source(s).", "INFO")
+		}
+
+		if (genFiles.isNotEmpty()) {
+    		vexelLog("Found ${genFiles.size} generated Java source(s).", "INFO")
+		}
+		
+		vexelLog("Compiling Java sources...", "BUILD")
+		
 		val jarFiles = mutableListOf<String>()
 		
 		if (checkDir(Vexel.Project.jarLib)) {
@@ -67,6 +93,49 @@ object Build {
 		)
 	}
 	
+	fun runKotlinCompile() {
+    	val kotlinFiles = findFiles(path(Vexel.Project.dir, "kotlin"), ".kt", true)
+    	
+    	if (kotlinFiles.isEmpty()) {
+    		vexelLog("No Kotlin sources found, skipping Kotlin compilation.", "INFO")
+        	return
+    	}
+    	vexelLog("Found ${kotlinFiles.size} Kotlin source(s).", "INFO")
+    	vexelLog("Compiling Kotlin sources...", "BUILD")
+    	
+    	val jarFiles = mutableListOf<String>()
+
+    	if (checkDir(Vexel.Project.jarLib)) {
+        	jarFiles.addAll(findFiles(Vexel.Project.jarLib, ".jar"))
+
+        	for (jar in jarFiles) {
+            	vexelLog("Loaded ${File(jar).name}", "INFO")
+        	}
+    	}
+
+    	val separator = File.pathSeparator
+
+    	val classpath = (listOf(
+            	BuildTools.getSdk(),
+            //	Vexel.Env.kotlinStdlib,
+            //	Vexel.Env.kotlinReflect,
+            	Vexel.Output.classes
+        ) + jarFiles ).joinToString(separator)
+
+    	val args = arrayOf(
+        	"-d", Vexel.Output.classes,
+        	"-classpath", classpath,
+        	*kotlinFiles.toTypedArray()
+    	)
+
+    	val error = BuildTools.runKotlinc(args)
+
+    	if (error.isNotEmpty()) {
+        	vexelThrow(ErrorCode.INTERNAL_ERROR, error)
+        	return
+    	}
+	}
+	
 	// Dex
 	fun convertDex() {
 		val classFiles = findFiles(Vexel.Output.classes, ".class")
@@ -83,11 +152,27 @@ object Build {
 			jarFiles.addAll(findFiles(Vexel.Project.jarLib, ".jar"))
 		}
 		
+		val kotlinFiles =
+    		if (checkDir(path(Vexel.Project.dir, "kotlin")))
+        		findFiles(path(Vexel.Project.dir, "kotlin"), ".kt", true)
+    		else
+        		emptyList()
+
+		val useKotlinStdlib = kotlinFiles.isNotEmpty()
+		val dexInputs = mutableListOf<String>()
+
+		dexInputs.addAll(classFiles)
+		dexInputs.addAll(jarFiles)
+
+		if (useKotlinStdlib) {
+    		dexInputs.add(Vexel.Env.kotlinStdlib)
+		}
+		
 		BuildTools.runD8(listOf(
 			"--lib", BuildTools.getSdk(),
 			"--min-api", "21",
 			"--output", Vexel.Output.dex
-			) + classFiles + jarFiles
+			) + dexInputs
 		)
 	}
 	
@@ -130,6 +215,33 @@ object Build {
 		}
 	}
 	
+
+	fun mergeNativeLibraries(srcDir: String, dstDir: String) {
+    	val source = File(srcDir)
+    	val dest = File(dstDir)
+
+    	if (!source.exists()) { return }
+    	dest.mkdirs()
+
+    	source.walkTopDown().filter { it.isFile }.forEach { file ->
+            val relative = file.relativeTo(source)
+            val outFile = File(dest, relative.path)
+
+            outFile.parentFile?.mkdirs()
+
+            if (outFile.exists()) {
+                vexelThrow(
+                    ErrorCode.FILE_ALREADY_EXISTS,
+                    "Native library conflict: ${relative.path}",
+                    "Two libraries with the same name were found. Remove one of them.",
+                    debugInfo = "Source: ${file.absolutePath}\nDestination: ${outFile.absolutePath}"
+                )
+            }
+
+            file.copyTo(outFile)
+        }
+	}
+	
 	// Zipalign
 	fun alignApk() {
 		BuildTools.runZipalign(listOf("-f", "4",
@@ -141,50 +253,71 @@ object Build {
 	
 	// Generate KeyStore
 	fun generateKeystore(outKeyDir: String, key: String? = null, length: Int = 24): KeyStoreResult {
-		val keystorePath = path(outKeyDir, "debug.keystore")
-		
-		if (checkFile(path(outKeyDir, "debug.keystore.pass"))) {
-			val file = File(path(outKeyDir, "debug.keystore.pass"))
-			val key: String = file.readText() 
-		}
-		
-		val password = if (key != null) { key } else {
-			vexelLog("Generating new password...", "INFO")
-			
-			val chars = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "0123456789"
-			val random = SecureRandom()
-			
-			buildString {
-				repeat(length) {
-					append(chars[random.nextInt(chars.length)])
-				}
-			}
-		}
-		
-		vexelLog("Generating keystore...", "INFO")
-		
-		BuildTools.runKeytool(listOf(
-			"-genkeypair", "-v",
-			"-keystore", keystorePath,
-			"-storepass", password,
-			"-keypass", password,
-			"-alias", "vexelkey",
-			"-keyalg", "RSA",
-			"-keysize", "2048",
-			"-validity", "10000",
-			"-dname", "CN=Vexel,O=Dev,C=US"
-			)
-		)
-		
-		writeFile(path(outKeyDir, "debug.keystore.pass"), password)
-		vexelLog("Keystore created", "INFO")
-		
-		return KeyStoreResult(keystorePath, password)
+
+    	val keystorePath = path(outKeyDir, "debug.keystore")
+    	val keystorePassPath = path(outKeyDir, "debug.keystore.pass")
+
+    	vexelLog("Checking debug signing key...", "INFO")
+
+    	val password = when {
+        	key != null -> { key }
+
+        	checkFile(keystorePassPath) -> {
+            	vexelLog("Existing debug signing key found.", "INFO")
+            	File(keystorePassPath).readText().trim()
+        	}
+
+        	else -> {
+            	vexelLog("No debug signing key found.", "INFO")
+            	vexelLog("Generating debug signing credentials...", "INFO")
+
+            	val chars =
+                "abcdefghijklmnopqrstuvwxyz" +
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+                "0123456789"
+
+            	val random = SecureRandom()
+
+            	buildString {
+                	repeat(length) {
+                    	append(chars[random.nextInt(chars.length)])
+                	}
+            	}
+        	}
+    	}
+
+    	if (!checkFile(keystorePath)) {
+        	vexelLog("Generating debug keystore...", "INFO")
+
+        	BuildTools.runKeytool(listOf(
+                "-genkeypair",
+                "-v",
+                "-keystore", keystorePath,
+                "-storepass", password,
+                "-keypass", password,
+                "-alias", "vexelkey",
+                "-keyalg", "RSA",
+                "-keysize", "2048",
+                "-validity", "10000",
+                "-dname", "CN=Vexel,O=Dev,C=US"
+            ) )
+
+        	vexelLog("Debug keystore created.", "INFO")
+    	} else {
+        	vexelLog("Using existing debug keystore.", "INFO")
+    	}
+
+    	if (!checkFile(keystorePassPath)) {
+        	writeFile(keystorePassPath, password)
+    	}
+
+    	return KeyStoreResult(keystorePath, password)
 	}
 	
 	// ApkSigner
 	fun signApk() {
 		val result = generateKeystore(Vexel.Output.key)
+		vexelLog("Signing APK...", "BUILD")
 		
 		BuildTools.runApkSigner(listOf(
 			"sign", "--ks", result.keystorePath,

@@ -9,7 +9,7 @@ import java.nio.file.StandardCopyOption
 
 fun makeFileSystem() {
     if (checkDir(Vexel.Output.dir)) {
-        vexelLog("Cleaning...", "INFO")
+        vexelLog("Cleaning build directory...", "INFO")
         removeDir(Vexel.Output.dir)
     }
 
@@ -25,24 +25,29 @@ fun build() {
     val start = System.currentTimeMillis()
 
     val config = loadConfig(Vexel.Project.vexelBuild)
-
+	val app = config["app"] ?: mutableMapOf()
+	val appName = app.get("name")
+	
     makeFileSystem()
 
     Build.updateManifest(Vexel.Project.manifest, Vexel.Output.manifest, config)
 
-    vexelLog("Compile resources...", "BUILD")
+    vexelLog("Compiling resources...", "BUILD")
     Build.runAapt2Compile()
 
-    vexelLog("Link resources...", "BUILD")
+    vexelLog("Linking resources...", "BUILD")
     Build.runAapt2Link()
 
-    vexelLog("Compile Java...", "BUILD")
+    vexelLog("Checking Java sources...", "INFO")
     Build.runJavaCompile()
+    
+    vexelLog("Checking Kotlin sources...", "INFO")
+    Build.runKotlinCompile()
 
-    // Build native
+    vexelLog("Checking C/C++ sources...", "INFO")
     buildNative()
 
-    vexelLog("Convert to DEX...", "BUILD")
+    vexelLog("Convert classes to DEX...", "BUILD")
     Build.convertDex()
 
     vexelLog("Add classes.dex...", "BUILD")
@@ -59,12 +64,12 @@ fun build() {
     }
 
     // Add User Dynamic Libraries
-    Build.addToZip(
-        path(Vexel.Output.apk, "unaligned.apk"),
-        Vexel.Project.dynLib
+	Build.mergeNativeLibraries(
+    	Vexel.Project.dynLib,
+    	Vexel.Output.dynLib
 	)
 
-    // Add Compiled Dynamic Libraries
+    // Add Dynamic Libraries
     Build.addToZip(
         path(Vexel.Output.apk, "unaligned.apk"),
         Vexel.Output.dynLib
@@ -76,22 +81,21 @@ fun build() {
         Vexel.Project.assets
     )
 
-    vexelLog("Align APK...", "BUILD")
+    vexelLog("Aligning APK...", "BUILD")
     Build.alignApk()
 
-    vexelLog("Sign APK...", "BUILD")
     Build.signApk()
 
     makeDir(Vexel.Output.finalApk)
 
     Files.copy(
         File(path(Vexel.Output.apk, "final.apk")).toPath(),
-        File(path(Vexel.Output.finalApk, "Debug.apk")).toPath(),
+        File(path(Vexel.Output.finalApk, "${appName}-debug.apk")).toPath(),
         StandardCopyOption.REPLACE_EXISTING
     )
 
     val elapsed = (System.currentTimeMillis() - start) / 1000.0
 
-    vexelLog("Build Successful in %.2f sec".format(elapsed), "INFO")
-    vexelLog("APK saved at: ${path(Vexel.Output.finalApk,"Debug.apk")}", "INFO")
+    vexelLog("Build Successful in %.2f sec.".format(elapsed), "INFO")
+    vexelLog("APK saved at: ${path(Vexel.Output.finalApk,"${appName}-debug.apk")}", "INFO")
 }

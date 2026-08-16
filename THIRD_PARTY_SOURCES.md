@@ -1,21 +1,41 @@
-## Third-Party Software
+# Third-Party Software
 
-Vexel includes third-party software distributed under their respective licenses.
+Vexel includes and/or redistributes third-party software. Each component
+remains subject to its respective license and copyright notices.
 
-### Android Build Tools
-Includes components from the Android Build Tools project, such as:
+## Android SDK / Build Tools
+
+Vexel includes components from the Android SDK and Android Open Source
+Project, including:
 
 - aapt2
 - zipalign
 - D8
-- APK Signer
+- apksigner
 - android.jar
 
-- tomlj
-- zip4j
-- jdom2
+Copyright © The Android Open Source Project.
 
-Copyright © The Android Open Source Project
+These components are distributed under their respective Android SDK /
+Android Open Source Project licenses. See the accompanying license files
+for the applicable terms.
 
-These components remain subject to their original licenses.
-See the corresponding license files for details.
+## Kotlin
+
+Vexel includes the Kotlin compiler and Kotlin runtime components.
+
+Copyright © JetBrains s.r.o. and Kotlin contributors.
+
+Kotlin is distributed under its applicable open-source licenses.
+See the accompanying Kotlin license files for the applicable terms.
+
+## Other Third-Party Libraries
+
+Vexel also includes:
+
+- TOML/J
+- Zip4j
+- JDOM2
+
+Each library remains subject to its respective license and copyright
+notices. See the accompanying license files for the applicable terms.

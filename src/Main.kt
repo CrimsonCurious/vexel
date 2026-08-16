@@ -5,7 +5,7 @@ package app.pie.vexel
 
 import java.io.File
 
-const val Version = "0.3.0"
+const val Version = "0.3.1"
 val InstallMarker = path(Vexel.Env.home, ".installed")
 const val unkcmd = """vexel: Unknown command [type "vexel help"]"""
 const val narg = """vexel: Needs one Argument [type "vexel help"]"""
@@ -18,12 +18,13 @@ Usage:
   vexel <option>
 
 Options:
-  new          Create a new project
   build        Builds the project
-  clean        Remove build cache
-  version      Display current version
   checkup      Checks config.toml
+  clean        Remove build cache
+  config       Writes default config.toml
   help         Display this help page
+  new          Create a new project
+  version      Display current version
 
 PieStudios © 2026
 """.trimIndent()
@@ -40,6 +41,10 @@ fun getJavaVersion(): String {
     } catch (_: Exception) {
         "Not Found"
     }
+}
+
+fun writeConfig() {
+	writeFile(Vexel.Config.file, DefaultData.getConfigToml())
 }
 
 fun checkup() {
@@ -98,6 +103,7 @@ fun main(args: Array<String>) {
         "version" -> { println("Vexel $Version") }
         "checkup" -> { checkup() }
         "help" -> { println(help) }
+        "config" -> { writeConfig() }
         else -> { println(unkcmd) }
     }
 }
