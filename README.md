@@ -272,7 +272,7 @@ Vexel would not be possible without the following projects and tools.
 `Kotlin`
   - Kotlin Compiler
   - Kotlin Standard library
-`
+
 `Android Build Tools`
   - AAPT2
   - D8
