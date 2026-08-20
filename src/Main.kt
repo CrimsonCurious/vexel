@@ -5,7 +5,7 @@ package app.pie.vexel
 
 import java.io.File
 
-const val Version = "0.3.1"
+const val Version = "0.4.0"
 val InstallMarker = path(Vexel.Env.home, ".installed")
 const val unkcmd = """vexel: Unknown command [type "vexel help"]"""
 const val narg = """vexel: Needs one Argument [type "vexel help"]"""
