@@ -6,7 +6,7 @@ Vexel currently has 4 ⭐ — one more and I'll start working on the next releas
 
 Every milestone unlocks a new Vexel update. 👀
 
-Current goal: "5 ⭐" ⭐⭐⭐⭐⭐
+Current goal: 5 Starts
 
 Let's see how far Vexel can go!
 
