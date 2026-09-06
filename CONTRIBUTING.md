@@ -1,9 +1,9 @@
-Contributing to Vexel
+# Contributing to Vexel
 
 Thanks for your interest in contributing to Vexel! Contributions, bug
 reports, documentation improvements, and suggestions are welcome.
 
-Before Contributing
+# Before Contributing
 
 For large changes, please open an issue first to discuss the idea. This
 helps avoid duplicated work and makes sure the change fits Vexel's goals.
@@ -11,7 +11,7 @@ helps avoid duplicated work and makes sure the change fits Vexel's goals.
 Small bug fixes, documentation changes, examples, and other straightforward
 improvements can usually be submitted directly.
 
-Reporting Bugs
+# Reporting Bugs
 
 When reporting a bug, please include:
 
@@ -27,7 +27,7 @@ When reporting a bug, please include:
 Please avoid posting sensitive information such as passwords, signing keys,
 or private file paths when they are not relevant to the issue.
 
-Pull Requests
+# Pull Requests
 
 Before submitting a pull request:
 
@@ -39,21 +39,21 @@ Before submitting a pull request:
 
 Please provide a short description of what changed and why.
 
-Code Style
+# Code Style
 
 Keep the existing code style consistent with the surrounding code.
 
 Avoid unnecessary refactoring when making a small fix. If a larger
 refactoring is needed, discuss it in an issue first.
 
-Documentation
+# Documentation
 
 Documentation improvements are always welcome.
 
 When adding or changing a feature, update the relevant documentation when
 the change affects how users install, configure, build, or use Vexel.
 
-Examples
+# Examples
 
 Vexel examples should remain functional and should be tested after changes
 that affect the build system or project templates.
@@ -61,7 +61,7 @@ that affect the build system or project templates.
 If you add a new template or example, make sure it can be created and built
 from a clean project.
 
-Commit Messages
+# Commit Messages
 
 Keep commit messages short and descriptive.
 
@@ -72,7 +72,7 @@ Examples:
 - "Fix generated R.java package"
 - "Update build documentation"
 
-Questions and Discussion
+# Questions and Discussion
 
 If you are unsure whether a change belongs in Vexel, open an issue and
 describe the proposed change before spending significant time implementing
