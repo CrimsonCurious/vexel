@@ -1,3 +1,15 @@
+# New Challenge
+
+Get Vexel to 5 ⭐ and the next update will be released!
+
+Vexel currently has 4 ⭐ — one more and I'll start working on the next release.
+
+Every milestone unlocks a new Vexel update. 👀
+
+Current goal: "5 ⭐" ⭐⭐⭐⭐⭐
+
+Let's see how far Vexel can go!
+
 # Vexel
 
 Vexel is a lightweight, self-contained Android APK builder written in Kotlin. It is designed to build Android applications directly on Android devices without requiring Android Studio, Gradle, or a desktop computer.
