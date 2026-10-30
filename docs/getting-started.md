@@ -4,7 +4,7 @@ Vexel is a lightweight Android APK builder designed to run directly on Android d
 
 ## Create a Project
 
-```sh
+```shell
 vexel new
 ```
 
@@ -18,7 +18,7 @@ Follow the prompts and enter:
 
 ## Build
 
-```sh
+```shell
 vexel build
 ```
 
@@ -32,7 +32,7 @@ will be generated.
 
 ## Clean Build Files
 
-```sh
+```shell
 vexel clean
 ```
 
@@ -40,7 +40,7 @@ Removes the output directory.
 
 ## Check Toolchain
 
-```sh
+```shell
 vexel checkup
 ```
 
@@ -59,6 +59,12 @@ Java source:
 
 ```text
 src/java/
+```
+
+Kotlin source:
+
+```text
+src/Kotlin
 ```
 
 Resources:

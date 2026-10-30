@@ -9,6 +9,10 @@ MyApp/
 │   │   └── com/example/app/
 │   │       └── MainActivity.java
 │   │
+│   ├── kotlin
+│   │   └── com/example/app/
+│   │       └── HelperActivity.kt
+│   │
 │   ├── res/
 │   │   └── layout/
 │   │       └── activity_main.xml
@@ -34,6 +38,10 @@ MyApp/
 ### src/java
 
 Java source code.
+
+### src/kotlin
+
+Kotlin source code
 
 ### src/res
 

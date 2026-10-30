@@ -2,7 +2,7 @@
 
 Vexel is a lightweight, self-contained Android APK builder written in Kotlin. It is designed to build Android applications directly on Android devices without requiring Android Studio, Gradle, or a desktop computer.
 
-Vexel focuses on simplicity, portability, and speed while remaining powerful enough to support Java and native C/C++ development.
+Vexel focuses on simplicity, portability, and speed while remaining powerful enough to support Java, Kotlin, and native C/C++ development.
 
 ---
 
@@ -15,9 +15,11 @@ Vexel takes a different approach:
   - Runs directly on Android.
   - No Android Studio required.
   - No Gradle required.
-  - Supports Java and Native C/C++.
+  - Supports Java, Kotlin and Native C/C++.
   - Lightweight installation size.
   - Fast incremental build pipeline.
+  - Built-in Kotlin compiler.
+  - Java/Kotlin mixed-project support.
 
 The goal of Vexel is to provide a minimal but practical Android build environment that can run almost anywhere.
 
@@ -32,16 +34,19 @@ Features
   - AndroidManifest.xml processing
   - Resource compilation using AAPT2
   - Java compilation using Javac
+  - Kotlin compilation using the bundled Kotlin compiler
+  - Java/Kotlin mixed-project support
   - DEX generation using D8
   - APK alignment
   - APK signing
-  - Automatic/Manual debug keystore generation
+  - Automatic and manual debug keystore management
+  - Persistent debug signing credentials
 
 Bundled Android platform:
 
 - Android API 34
 
-A different `android.jar` can be configured through `config.toml`.
+A different `android.jar` can be configured through `config.vcl`.
 
 Native Development (NDK)
 
@@ -79,7 +84,7 @@ Portable Design
 
 Vexel primarily targets:
 
-  - Termux
+  - Termux (Android)
 
 Experimental support:
 
@@ -100,7 +105,9 @@ Also supported:
 4. Ensure Java 17 or newer is installed.
 5. Run:
 
+```shell
 vexel version
+```
 
 ---
 
@@ -112,12 +119,13 @@ Typical project layout:
 MyApp/
 ├── src/
 │   ├── java/
+│   ├── kotlin/
 │   ├── res/
 │   ├── cpp/
-│   │   └── native.build   
+│   │   └── native.vcl
 │   └── AndroidManifest.xml
 │
-├── vexel.build
+├── vexel.vcl
 └── build/
 ```
 
@@ -125,43 +133,71 @@ MyApp/
 
 **Build Configuration**
 
-`vexel.build`
+`vexel.vcl`
 
 Controls application-level settings:
 
-```toml
-[app]
-name = "My App"
-package = "com.example.app"
-version_code = 1
-version_name = "1.0"
+```vcl
+build: {
+    app: {
+		id: "$packageName"
+        name: "$appName"
+        version: "1.0.0"
+        buildCode: 1
+    }
 
-[sdk]
-min = 21
-target = 35
+    sdk: {
+        minSdk: $sdkMin
+        targetSdk: $sdkTarget
+    }
 
-[ndk]
-enabled = true
-cpp = true
-api = 29
-abi = "arm64-v8a armeabi-v7a x86_64"
+    native: {
+        enabled: false
+	}
+}
 ```
 
-`native.build`
+`native.vcl`
 
 Controls native library compilation:
 
-```toml
-[lib-native]
+```vcl
+libnative: {
+	# Source files or directories.
+	# Supported formats:
+	#   cpp/src/
+	#   cpp/src/*.c
+	#   cpp/Main.c
+	src: [
+		"cpp/src/main.cpp"
+	]
+	
+	# Static libraries files
+	# staticLibs: ["cpp/src/libfoo.a"]
 
-src = "cpp/src"
-include = "cpp/include"
+	# Additional header search directories.
+	include: [
+		"cpp/src"
+	]
 
-cpp = true
+	# Enable C++ compilation.
+	# Set to false to compile as C.
+	cpp: true
 
-link = "android log"
+	# System or user libraries to link.
+	link: [
+		"android"
+		"log"
+	]
 
-flags = "-O2 -Wall -s"
+	# Additional compiler and linker flags.
+	# The flags -shared and -fPIC are added automatically.
+	flags: [
+		"-O2"
+		"-Wall"
+		"-s"
+	]
+}
 ```
 
 ---
@@ -170,10 +206,27 @@ flags = "-O2 -Wall -s"
 
 *Creating a New Project*
 
-To create a new project, run:
+To create a new project interactively, run:
+
+```shell
+vexel new
+```
+
+Then list your actual template names.
+
+For example:
 
 ```text
-vexel new
+Java Activity
+Kotlin Activity
+Native Activity (Java)
+Native Activity (Kotlin)
+```
+
+A specific template can also be selected directly:
+
+```text
+vexel new <template>
 ```
 
 Select the desired project template when prompted.
@@ -182,36 +235,41 @@ Configuring the Project
 
 After creating the project:
 
-1. Edit the "vexel.build" file to configure your project settings.
-2. If your project contains C or C++ code, edit the "native.build" file as needed.
+1. Edit the "vexel.vcl" file to configure your project settings.
+2. If your project contains C or C++ code, edit the "native.vcl" file as needed.
 3. Implement your application code.
 
 Building the Application
 
 Once your project is ready, build it using:
 
-```text
+```shell
 vexel build
 ```
 
 The build process will generate an Android APK from your project source code.
-The Final generated Android APK goes to build/output/Debug.apk
+The final generated APK is placed in:
+
+```text
+build/output/
+```
+
+The APK filename is generated from the project/application name.
 
 ---
 
 **How Vexel Works**
 
 The build process is intentionally straightforward:
-
   1. Compile Android resources using AAPT2.
   2. Link resources and generate R.java.
-  3. Compile Java source code.
-  4. Compile native source files using Clang (optional).
-  5. Convert class files into DEX using D8.
-  6. Package resources and DEX files into APK.
-  7. Add native libraries.
-  8. Align APK using ZipAlign.
-  9. Sign APK using APKSigner.
+  3. Compile Java sources and generated Java sources.
+  4. Compile Kotlin sources, if present.
+  5. Compile native source files using Clang, if enabled.
+  6. Convert class files into DEX using D8.
+  7. Package resources, DEX files, and native libraries into the APK.
+  8. Align the APK using ZipAlign.
+  9. Sign the APK using APKSigner.
   10. Produce the final APK.
 
 ---
@@ -241,22 +299,26 @@ Vexel would not be possible without the following projects and tools.
   - Android SDK Platform (`android.jar`)
   - Android Open Source Project (AOSP)
 
+`Kotlin`
+  - Kotlin Compiler
+  - Kotlin Standard library
+
 `Android Build Tools`
   - AAPT2
   - D8
   - APKSigner
   - ZipAlign
 
-`Toml parser`
-  - tomlj
+Provided by Android Build Tools and AOSP.
+
+`VCL parser`
+  - Vexel's own parser
 
 `XML parser`
   - jdom2
 
-`Zip editor
+`Zip editor`
   - zip4j
-
-Provided by Android Build Tools and AOSP.
 
 `Native Toolchain`
 
@@ -283,6 +345,16 @@ See LICENSE for licensing information.
 
 Vexel is an actively developed experimental project.
 
-Current release: v0.3.0
+Current release: v0.5.0-beta
 
-While stable for many use cases, APIs, project layouts, and build features may change between releases.
+Vexel is functional, but some features, documentation, and APIs may still change before the stable release.
+
+Use beta releases with the expectation that configuration formats, project structures, and build behavior may change.
+
+---
+
+**Documentation Notice**
+
+Documentation is currently being updated. Some examples and sections may be incomplete or outdated.
+
+Please refer to the latest release notes for changes and corrections.
